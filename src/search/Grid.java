@@ -94,39 +94,43 @@ public class Grid {
 		boolean down=false;
 		boolean left=false;
 		//Check we're not at any limits
-		if(curCell.y==size-1) {
+		Cell testCell = up(curCell);
+		if(testCell==null) {
 			up=true;
 		}
 		//Check if it's visited or not
-		else if(up(curCell).visited==false) {
+		else if(testCell.visited==false) {
 			potential.add(up(curCell));
 		}
 		//If it is visited then we check the next ones
 		else {
 			up=true;
 		}
-		if(curCell.x==size-1) {
+		testCell = right(curCell);
+		if(testCell==null) {
 			right=true;
 		}
-		else if(right(curCell).visited==false) {
+		else if(testCell.visited==false) {
 			potential.add(right(curCell));
 		}
 		else {
 			right=true;
 		}
-		if(curCell.y==0) {
+		testCell = down(curCell);
+		if(testCell==null) {
 			down=true;
 		}
-		else if(down(curCell).visited==false) {
+		else if(testCell.visited==false) {
 			potential.add(down(curCell));
 		}
 		else {
 			down=true;
 		}
-		if(curCell.x==0) {
+		testCell = left(curCell);
+		if(testCell==null) {
 			left=true;
 		}
-		else if(left(curCell).visited==false) {
+		else if(testCell.visited==false) {
 			potential.add(left(curCell));
 		}
 		else {
@@ -136,34 +140,94 @@ public class Grid {
 			return null;
 		}
 		//And we pick a random one
+		/*
 		if(potential.size()==1) {
 			return potential.get(0);
 		}
+		*/
 		return potential.get(rand.nextInt(potential.size()));
 	}
 	//Move
 	public Cell up(Cell curCell) {
+		if(curCell.y==size-1) {
+			return null;
+		}
 		return grid.get(curCell.y+1).get(curCell.x);
 	}
 	public Cell right(Cell curCell) {
+		if(curCell.x==size-1) {
+			return null;
+		}
 		return grid.get(curCell.y).get(curCell.x+1);
 	}
 	public Cell down(Cell curCell) {
+		if(curCell.y==0) {
+			return null;
+		}
 		return grid.get(curCell.y-1).get(curCell.x);
 	}
 	public Cell left(Cell curCell) {
+		if(curCell.x==0) {
+			return null;
+		}
 		return grid.get(curCell.y).get(curCell.x-1);
 	}
-	
+	//maybe don't check if cell is blocked. we need to update a* on new information
+	public ArrayList<Cell> neighbors(Cell curCell){
+		ArrayList<Cell> neighbors = new ArrayList<Cell>();
+		Cell testCell = up(curCell);
+		if(!testCell.blocked) {
+			neighbors.add(testCell);
+		}
+		testCell = right(curCell);
+		if(!testCell.blocked) {
+			neighbors.add(testCell);
+		}
+		testCell = down(curCell);
+		if(!testCell.blocked) {
+			neighbors.add(testCell);
+		}
+		testCell = left(curCell);
+		if(!testCell.blocked) {
+			neighbors.add(testCell);
+		}
+		return neighbors;
+	}
 	//f(s)=g(s)+h(s)
 	//where g(s) is absolute steps from s to target (including blocks)
 	//h(s) is heuristic steps (stays constant regardless of blocks)
+	//insert all adjacent cells (not in heap already)
+	//with f g and h values to priority queue
+	//g value just increases by 1 while searching, h values are calculated
+	//take smallest f values, with higher g values breaking ties until target reached
+	//when we come upon new data (blocked cell) repeat A*?
 	public void repeatedForwardAStar(int startX, int startY, int endX, int endY) {
-		
+		Cell start = grid.get(startY).get(startX);
+		start.visited=true;
+		start.values(0, start.hval(endX, endY));
+		ArrayList<Cell> gscore = new ArrayList<Cell>();
+		ArrayList<Cell> fscore = new ArrayList<Cell>();
+		OpenList openlist = new OpenList(size*size);
+		openlist.push(start);
+		Cell curCell;
+		while(openlist.size()>0) {
+			curCell = openlist.pop();
+			ArrayList<Cell> neighbors = neighbors(curCell);
+			//Shortest path found (current cell is at target with smallest value)
+			if(curCell.x==endX && curCell.y==endY) {
+				break;
+			}
+			//check neighbors not in list already, and not blocked
+			for(Cell nextCell : neighbors) {
+				nextCell.visited=true;
+				nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
+				openlist.push(nextCell);
+			}
+		}
 	}
 	
 	
-	//Unnecessary check
+	//Reset all blocks back to not visited
 	public void visitedAll() {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {
@@ -215,11 +279,8 @@ public class Grid {
 				if(curCell.blocked==true) {
 					System.out.print("x");
 				}
-				else if(curCell.blocked==false) {
+				else{
 					System.out.print("o");
-				}
-				else {
-					System.out.print("?");
 				}
 			}
 			System.out.println("");

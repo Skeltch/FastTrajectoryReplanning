@@ -5,6 +5,7 @@ import java.util.Random;
 public class Run {
 
 	public static void main(String[] args) {
+		/*
 		BinaryHeap queue = new BinaryHeap(100);
 		Random rand = new Random();
 		for(int i=0; i<7; i++) {
@@ -13,7 +14,8 @@ public class Run {
 		for(int i=0; i<7; i++) {
 			System.out.println(queue.heap[i]);
 		}
-		/*
+		*/
+		
 		Grid grid = new Grid(5);
 		//Grid grid = new Grid();
 		grid.print();
@@ -29,8 +31,8 @@ public class Run {
 		int endY = input.nextInt();
 		input.close();
 		grid.visitedAll();
-		grid.repeatedForwardAStar(startX, startY, endX, endY);
+		grid.print();
+		//grid.repeatedForwardAStar(startX, startY, endX, endY);
 		grid.statistics();
-*/
 	}
 }
