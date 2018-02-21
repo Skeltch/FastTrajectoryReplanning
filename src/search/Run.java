@@ -5,17 +5,21 @@ import java.util.Random;
 public class Run {
 
 	public static void main(String[] args) {
-		/*
+		
 		BinaryHeap queue = new BinaryHeap(100);
 		Random rand = new Random();
 		for(int i=0; i<7; i++) {
 			queue.insert(rand.nextInt(5));
 		}
-		for(int i=0; i<7; i++) {
+		for(int i=0; i<queue.size; i++) {
 			System.out.println(queue.heap[i]);
 		}
-		*/
-		
+		System.out.println("New");
+		queue.deleteTop();
+		for(int i=0; i<queue.size; i++) {
+			System.out.println(queue.heap[i]);
+		}
+		/*
 		Grid grid = new Grid(5);
 		//Grid grid = new Grid();
 		grid.print();
@@ -34,5 +38,12 @@ public class Run {
 		grid.print();
 		//grid.repeatedForwardAStar(startX, startY, endX, endY);
 		grid.statistics();
+		*/
 	}
 }
+/*
+		1
+	2		1
+3		2 4		1
+
+*/

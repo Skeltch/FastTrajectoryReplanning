@@ -175,20 +175,21 @@ public class Grid {
 	//maybe don't check if cell is blocked. we need to update a* on new information
 	public ArrayList<Cell> neighbors(Cell curCell){
 		ArrayList<Cell> neighbors = new ArrayList<Cell>();
+		
 		Cell testCell = up(curCell);
-		if(!testCell.blocked) {
+		if(testCell!=null) {
 			neighbors.add(testCell);
 		}
 		testCell = right(curCell);
-		if(!testCell.blocked) {
+		if(testCell!=null) {
 			neighbors.add(testCell);
 		}
 		testCell = down(curCell);
-		if(!testCell.blocked) {
+		if(testCell!=null) {
 			neighbors.add(testCell);
 		}
 		testCell = left(curCell);
-		if(!testCell.blocked) {
+		if(testCell!=null) {
 			neighbors.add(testCell);
 		}
 		return neighbors;
@@ -219,9 +220,18 @@ public class Grid {
 			}
 			//check neighbors not in list already, and not blocked
 			for(Cell nextCell : neighbors) {
-				nextCell.visited=true;
-				nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
-				openlist.push(nextCell);
+				//use cell.visited?
+				if(!openlist.heap.contains(nextCell)) {
+					if(!nextCell.blocked) {
+						nextCell.visited=true;
+						nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
+						openlist.push(nextCell);
+					}
+					//Repeated a*?
+					else {
+						
+					}
+				}
 			}
 		}
 	}
