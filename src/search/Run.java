@@ -5,7 +5,7 @@ import java.util.Random;
 public class Run {
 
 	public static void main(String[] args) {
-		
+		/*
 		BinaryHeap queue = new BinaryHeap(100);
 		Random rand = new Random();
 		for(int i=0; i<7; i++) {
@@ -19,7 +19,25 @@ public class Run {
 		for(int i=0; i<queue.size; i++) {
 			System.out.println(queue.heap[i]);
 		}
+		*/
 		/*
+		OpenList queue = new OpenList();
+		Random rand = new Random();
+		for(int i=0; i<7; i++) {
+			Cell cell = new Cell(0,0);
+			cell.values(rand.nextInt(5), rand.nextInt(5));
+			queue.push(cell);
+		}
+		for(int i=0; i<queue.size; i++) {
+			System.out.println(queue.heap.get(i).fval);
+		}
+		System.out.println("New");
+		queue.pop();
+		for(int i=0; i<queue.size; i++) {
+			System.out.println(queue.heap.get(i).fval);
+		}
+		*/
+		
 		Grid grid = new Grid(5);
 		//Grid grid = new Grid();
 		grid.print();
@@ -35,15 +53,21 @@ public class Run {
 		int endY = input.nextInt();
 		input.close();
 		grid.visitedAll();
+		//grid.print();
+		System.out.println("Path");
+		grid.repeatedForwardAStar(startX, startY, endX, endY);
 		grid.print();
-		//grid.repeatedForwardAStar(startX, startY, endX, endY);
 		grid.statistics();
-		*/
+		
 	}
 }
 /*
-		1
-	2		1
-3		2 4		1
+		0
+	5		4
+5	6		8	6
+
+		4
+	5		6
+5	6		8
 
 */

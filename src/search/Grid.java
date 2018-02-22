@@ -208,11 +208,34 @@ public class Grid {
 		start.values(0, start.hval(endX, endY));
 		ArrayList<Cell> gscore = new ArrayList<Cell>();
 		ArrayList<Cell> fscore = new ArrayList<Cell>();
-		OpenList openlist = new OpenList(size*size);
+		OpenList openlist = new OpenList();
 		openlist.push(start);
 		Cell curCell;
+		ArrayList<Cell> path = new ArrayList<Cell>();
+		int counter=0;
+		for(Cell cell : neighbors(start)){
+			cell.visited=true;
+		}
 		while(openlist.size()>0) {
+			for(int i=0; i<openlist.size; i++) {
+				System.out.println(openlist.heap.get(i).x+","+openlist.heap.get(i).y+","+openlist.heap.get(i).fval);
+			}
 			curCell = openlist.pop();
+			for(int i=0; i<openlist.size; i++) {
+				System.out.println(openlist.heap.get(i).x+","+openlist.heap.get(i).y+","+openlist.heap.get(i).fval);
+			}
+			System.out.print("Current Location: ");
+			System.out.println(Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
+			curCell.visited=true;
+			System.out.println("Step "+counter);
+			counter++;
+			print();
+			path.add(curCell);
+			if(curCell.x==endX && curCell.y==endY) {
+				for(Cell cell : path) {
+					System.out.println(Integer.toString(cell.x)+","+Integer.toString(cell.y));
+				}
+			}
 			ArrayList<Cell> neighbors = neighbors(curCell);
 			//Shortest path found (current cell is at target with smallest value)
 			if(curCell.x==endX && curCell.y==endY) {
@@ -222,14 +245,10 @@ public class Grid {
 			for(Cell nextCell : neighbors) {
 				//use cell.visited?
 				if(!openlist.heap.contains(nextCell)) {
-					if(!nextCell.blocked) {
-						nextCell.visited=true;
+					if(!nextCell.blocked || !nextCell.visited) {
 						nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
+						System.out.println("Pushing cells: "+nextCell.x+","+nextCell.y+","+nextCell.fval);
 						openlist.push(nextCell);
-					}
-					//Repeated a*?
-					else {
-						
 					}
 				}
 			}

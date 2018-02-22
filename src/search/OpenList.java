@@ -6,13 +6,16 @@ public class OpenList {
 	//Cell[] heap;
 	ArrayList<Cell> heap;
 	
-	public OpenList(int size) {
+	public OpenList() {
 		this.size=0;
 		//heap = new Cell[size];
 		heap = new ArrayList<Cell>();
 	}
 	public void push(Cell cell) {
 		//heap[size++]=cell;
+		if(size==0 && heap.size()!=0) {
+			heap.set(0, cell);
+		}
 		heap.add(cell);
 		size++;
 		heapifyUp(size-1);
