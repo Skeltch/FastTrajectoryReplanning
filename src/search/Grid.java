@@ -208,7 +208,7 @@ public class Grid {
 		start.values(0, start.hval(endX, endY));
 		ArrayList<Cell> gscore = new ArrayList<Cell>();
 		ArrayList<Cell> fscore = new ArrayList<Cell>();
-		OpenList openlist = new OpenList();
+		OpenList openlist = new OpenList(size*size);
 		openlist.push(start);
 		Cell curCell;
 		ArrayList<Cell> path = new ArrayList<Cell>();
@@ -217,12 +217,13 @@ public class Grid {
 			cell.visited=true;
 		}
 		while(openlist.size()>0) {
+			System.out.println("Prepop");
 			for(int i=0; i<openlist.size; i++) {
-				System.out.println(openlist.heap.get(i).x+","+openlist.heap.get(i).y+","+openlist.heap.get(i).fval);
+				System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
 			}
 			curCell = openlist.pop();
 			for(int i=0; i<openlist.size; i++) {
-				System.out.println(openlist.heap.get(i).x+","+openlist.heap.get(i).y+","+openlist.heap.get(i).fval);
+				System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
 			}
 			System.out.print("Current Location: ");
 			System.out.println(Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
@@ -244,7 +245,10 @@ public class Grid {
 			//check neighbors not in list already, and not blocked
 			for(Cell nextCell : neighbors) {
 				//use cell.visited?
-				if(!openlist.heap.contains(nextCell)) {
+				//Maybe bugged here
+				//if(!openlist.heap.contains(nextCell)) {
+				System.out.println(openlist.size);
+				if(openlist.size==0 || !openlist.contains(nextCell)) {
 					if(!nextCell.blocked || !nextCell.visited) {
 						nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
 						System.out.println("Pushing cells: "+nextCell.x+","+nextCell.y+","+nextCell.fval);
