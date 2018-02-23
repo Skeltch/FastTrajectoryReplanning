@@ -18,12 +18,16 @@ public class Grid {
 				//grid.get(i).get(j).visited=true;
 			}
 		}
+		/*
 		grid.get(4).get(3).blocked=true;
 		grid.get(3).get(2).blocked=true;
 		grid.get(2).get(2).blocked=true;
 		grid.get(1).get(2).blocked=true;
 		grid.get(3).get(3).blocked=true;
 		grid.get(2).get(3).blocked=true;
+		*/
+		grid.get(4).get(3).blocked=true;
+		grid.get(3).get(4).blocked=true;
 	}
 	//Initialize the grid with the described method
 	public Grid(int size) {
@@ -207,6 +211,7 @@ public class Grid {
 	public void repeatedForwardAStar(int startX, int startY, int endX, int endY) {
 		Cell start = grid.get(startY).get(startX);
 		HashMap<Cell, Cell> path = new HashMap<Cell, Cell>();
+		ArrayList<Cell> shortestPath = new ArrayList<Cell>();
 		start.visited=true;
 		start.visible=true;
 		start.values(0, start.hval(endX, endY));
@@ -220,17 +225,19 @@ public class Grid {
 		for(Cell cell : neighbors(start)){
 			cell.visible=true;
 		}
+		//Another loop while agent isn't at target
+		//Move by reversing shortestPath list and if the original path
+		//is blocked, run A* again with new information
 		while(openlist.size()>0) {
-			
+			/*
 			System.out.println("Prepop");
 			for(int i=0; i<openlist.size; i++) {
 				System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
 			}
-			
+			*/
 			curCell = openlist.pop();
-			print();
+			//print();
 			if(curCell.x==endX && curCell.y==endY && curCell.fval<=openlist.top().fval) {
-				ArrayList<Cell> shortestPath = new ArrayList<Cell>();
 				System.out.println("Shortest path");
 				while(path.containsKey(curCell)) {
 					shortestPath.add(curCell);
@@ -268,6 +275,17 @@ public class Grid {
 						path.put(nextCell, curCell);
 					}
 				}
+			}
+		}
+		if(shortestPath.isEmpty()) {
+			System.out.println("No possible path");
+		}
+	}
+	
+	public void revealAll() {
+		for(int i=0; i<size; i++) {
+			for(int j=0; j<size; j++) {
+				grid.get(i).get(j).visible=true;
 			}
 		}
 	}
@@ -332,3 +350,14 @@ public class Grid {
 		}
 	}
 }
+/*
+We may need to backtrack so we can't ignore that path
+oooooo
+ooxooo
+oxoxoo
+oxoxoo
+ooAoxT
+So what will happen is A* will observe the path backwards
+but realize it's a dead end and only take it if necessary
+
+*/

@@ -55,19 +55,10 @@ public class Run {
 		grid.visitedAll();
 		//grid.print();
 		System.out.println("Path");
+		grid.revealAll();
 		grid.repeatedForwardAStar(startX, startY, endX, endY);
 		grid.print();
 		grid.statistics();
 		
 	}
 }
-/*
-		0
-	5		4
-5	6		8	6
-
-		4
-	5		6
-5	6		8
-
-*/
