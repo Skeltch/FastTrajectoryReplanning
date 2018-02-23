@@ -49,6 +49,9 @@ public class OpenList {
 		delete(0);
 		return top;
 	}
+	public Cell top() {
+		return heap[0];
+	}
 	public Cell delete(int index) {
 		
 		Cell cell = heap[index];

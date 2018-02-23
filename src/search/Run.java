@@ -38,10 +38,10 @@ public class Run {
 		}
 		*/
 		
-		Grid grid = new Grid(5);
-		//Grid grid = new Grid();
-		grid.print();
-		//grid.printAll();
+		//Grid grid = new Grid(5);
+		Grid grid = new Grid();
+		//grid.print();
+		grid.printAll();
 		Scanner input = new Scanner(System.in);
 		System.out.println("Enter start x:");
 		int startX = input.nextInt();

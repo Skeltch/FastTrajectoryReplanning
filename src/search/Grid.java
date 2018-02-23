@@ -2,6 +2,7 @@ package search;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Random;
+import java.util.HashMap;
 
 public class Grid {
 	Random rand = new Random();
@@ -202,63 +203,74 @@ public class Grid {
 	//g value just increases by 1 while searching, h values are calculated
 	//take smallest f values, with higher g values breaking ties until target reached
 	//when we come upon new data (blocked cell) repeat A*?
+	//**************Instead of fval we need to break ties with another value******
 	public void repeatedForwardAStar(int startX, int startY, int endX, int endY) {
 		Cell start = grid.get(startY).get(startX);
+		HashMap<Cell, Cell> path = new HashMap<Cell, Cell>();
 		start.visited=true;
+		start.visible=true;
 		start.values(0, start.hval(endX, endY));
 		ArrayList<Cell> gscore = new ArrayList<Cell>();
 		ArrayList<Cell> fscore = new ArrayList<Cell>();
 		OpenList openlist = new OpenList(size*size);
 		openlist.push(start);
 		Cell curCell;
-		ArrayList<Cell> path = new ArrayList<Cell>();
+		ArrayList<Cell> closedlist = new ArrayList<Cell>();
 		int counter=0;
 		for(Cell cell : neighbors(start)){
-			cell.visited=true;
+			cell.visible=true;
 		}
 		while(openlist.size()>0) {
+			
 			System.out.println("Prepop");
 			for(int i=0; i<openlist.size; i++) {
 				System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
 			}
+			
 			curCell = openlist.pop();
-			for(int i=0; i<openlist.size; i++) {
-				System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
+			print();
+			if(curCell.x==endX && curCell.y==endY && curCell.fval<=openlist.top().fval) {
+				ArrayList<Cell> shortestPath = new ArrayList<Cell>();
+				for(Cell cell : path.keySet()) {
+					shortestPath.add(cell);
+					cell = path.get(cell);
+				}
+				System.out.println("Shortest path");
+				for(Cell cell : shortestPath) {
+					System.out.println(cell.x+","+cell.y);
+				}
+				break;
+				/*
+				System.out.println("Closed list");
+				for(Cell cell : closedlist) {
+					System.out.println(Integer.toString(cell.x)+","+Integer.toString(cell.y));
+				}
+				*/
 			}
 			System.out.print("Current Location: ");
 			System.out.println(Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
-			curCell.visited=true;
+			//curCell.visited=true;
 			System.out.println("Step "+counter);
 			counter++;
-			print();
-			path.add(curCell);
-			if(curCell.x==endX && curCell.y==endY) {
-				for(Cell cell : path) {
-					System.out.println(Integer.toString(cell.x)+","+Integer.toString(cell.y));
-				}
-			}
+			closedlist.add(curCell);
 			ArrayList<Cell> neighbors = neighbors(curCell);
-			//Shortest path found (current cell is at target with smallest value)
-			if(curCell.x==endX && curCell.y==endY) {
-				break;
-			}
 			//check neighbors not in list already, and not blocked
 			for(Cell nextCell : neighbors) {
+				//nextCell.visible=true;
 				//use cell.visited?
 				//Maybe bugged here
 				//if(!openlist.heap.contains(nextCell)) {
-				System.out.println(openlist.size);
-				if(openlist.size==0 || !openlist.contains(nextCell)) {
-					if(!nextCell.blocked || !nextCell.visited) {
+				if(!closedlist.contains(nextCell) && !openlist.contains(nextCell)) {
+					if(!nextCell.blocked || !nextCell.visible) {
 						nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
-						System.out.println("Pushing cells: "+nextCell.x+","+nextCell.y+","+nextCell.fval);
+						//System.out.println("Pushing cells: "+nextCell.x+","+nextCell.y+","+nextCell.fval);
 						openlist.push(nextCell);
+						path.put(nextCell, curCell);
 					}
 				}
 			}
 		}
 	}
-	
 	
 	//Reset all blocks back to not visited
 	public void visitedAll() {
@@ -292,10 +304,10 @@ public class Grid {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {
 				Cell curCell = grid.get(i).get(j);
-				if(curCell.blocked==true && curCell.visited==true) {
+				if(curCell.blocked==true && curCell.visible==true) {
 					System.out.print("x");
 				}
-				else if(curCell.blocked==false && curCell.visited==true) {
+				else if(curCell.blocked==false && curCell.visible==true) {
 					System.out.print("o");
 				}
 				else {
