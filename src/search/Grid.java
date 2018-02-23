@@ -322,7 +322,13 @@ public class Grid {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {
 				Cell curCell = grid.get(i).get(j);
-				if(curCell.blocked==true && curCell.visible==true) {
+				if(curCell.agent==true) {
+					System.out.println("A");
+				}
+				else if(curCell.target==true) {
+					System.out.println("T");
+				}
+				else if(curCell.blocked==true && curCell.visible==true) {
 					System.out.print("x");
 				}
 				else if(curCell.blocked==false && curCell.visible==true) {

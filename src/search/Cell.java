@@ -3,7 +3,7 @@ package search;
 public class Cell {
 	public int x,y;
 	public int fval,gval,hval;
-	public boolean visited,blocked,visible;
+	public boolean visited,blocked,visible,agent,target;
 	public Cell(int x, int y) {
 		visited=false;
 		blocked=false;
