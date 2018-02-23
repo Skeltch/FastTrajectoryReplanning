@@ -231,11 +231,11 @@ public class Grid {
 			print();
 			if(curCell.x==endX && curCell.y==endY && curCell.fval<=openlist.top().fval) {
 				ArrayList<Cell> shortestPath = new ArrayList<Cell>();
-				for(Cell cell : path.keySet()) {
-					shortestPath.add(cell);
-					cell = path.get(cell);
-				}
 				System.out.println("Shortest path");
+				while(path.containsKey(curCell)) {
+					shortestPath.add(curCell);
+					curCell=path.get(curCell);
+				}
 				for(Cell cell : shortestPath) {
 					System.out.println(cell.x+","+cell.y);
 				}
