@@ -28,7 +28,7 @@ public class OpenList {
 	public void heapifyUp(int index) {
 		
 		Cell tmp = (Cell) heap[index];
-		while(index>0 && tmp.fval < heap[(index-1)/2].fval) {
+		while(index>0 && tmp.priority < heap[(index-1)/2].priority) {
 			heap[index] = heap[(index-1)/2];
 			index = (index-1)/2;
 		}
@@ -36,7 +36,7 @@ public class OpenList {
 		
 		/*
 		Cell tmp = heap.get(index);
-		while(index>0 && tmp.fval < heap.get((index-1)/2).fval) {
+		while(index>0 && tmp.priority < heap.get((index-1)/2).priority) {
 			heap.set(index, heap.get((index-1)/2));
 			index = (index-1)/2;
 		}
@@ -74,7 +74,7 @@ public class OpenList {
 		Cell tmp = heap[index];
 		while(2*index+1<size) {
 			child = minChild(index);
-			if(heap[child].fval < tmp.fval) {
+			if(heap[child].priority < tmp.priority) {
 				heap[index] = heap[child];
 			}
 			else {
@@ -89,7 +89,7 @@ public class OpenList {
 		Cell tmp = heap.get(index);
 		while(2*index+1<size) {
 			child = minChild(index);
-			if(heap.get(child).fval < tmp.fval) {
+			if(heap.get(child).priority < tmp.priority) {
 				heap.set(index,  heap.get(child));
 			}
 			else {
@@ -105,8 +105,8 @@ public class OpenList {
 		int k=2;
 		int pos = 2*index+2;
 		while(k<=2 && pos<size) {
-			if(heap[pos].fval < heap[best].fval) {
-			//if(heap.get(pos).fval < heap.get(best).fval) {
+			if(heap[pos].priority < heap[best].priority) {
+			//if(heap.get(pos).priority < heap.get(best).priority) {
 				best = pos;
 			}
 			pos = (2*index+(k++));

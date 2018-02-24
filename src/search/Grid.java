@@ -4,6 +4,10 @@ import java.util.Stack;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Collections;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Grid {
 	Random rand = new Random();
@@ -18,14 +22,14 @@ public class Grid {
 				grid.get(i).add(new Cell(j,i));
 			}
 		}
-		
+		/*
 		grid.get(4).get(3).blocked=true;
 		grid.get(3).get(2).blocked=true;
 		grid.get(2).get(2).blocked=true;
 		grid.get(1).get(2).blocked=true;
 		grid.get(3).get(3).blocked=true;
 		grid.get(2).get(3).blocked=true;
-		
+		*/
 		//grid.get(4).get(3).blocked=true;
 		//grid.get(3).get(4).blocked=true;
 	}
@@ -194,11 +198,11 @@ public class Grid {
 	//take smallest f values, with higher g values breaking ties until target reached
 	//when we come upon new data (blocked cell) repeat A*?
 	//**************Instead of fval we need to break ties with another value******
-	public void repeatedForwardAStar(int startX, int startY, int endX, int endY) {
+	public void repeatedForwardAStar(int startX, int startY, int endX, int endY, boolean tieBreaker) {
 		//Initiate the starting cell as the agent cell, setting it visible and visited
 		Cell agentCell = grid.get(startY).get(startX);
 		agentCell.visible=true;
-		agentCell.values(0, agentCell.hval(endX, endY));
+		agentCell.values(0, agentCell.hval(endX, endY), size, tieBreaker);
 		grid.get(endY).get(endX).target=true;
 		Cell curCell;
 		agentCell.agent=true;
@@ -206,8 +210,9 @@ public class Grid {
 		for(Cell cell : neighbors(agentCell)){
 			cell.visible=true;
 		}
-		System.out.println("Step 0");
-		print();
+		//System.out.println("Step 0");
+		//print();
+		
 		//While the agent cell isn't at the end we are not finished
 		while(agentCell.x!=endX || agentCell.y!=endY) {
 			//This is the tree pointer for calculating path
@@ -224,12 +229,12 @@ public class Grid {
 				//Take lowest f value cell off heap
 				curCell = openlist.pop();
 				//We have found the shortest path if A* has reached the end and is the smallest value in the heap
-				if(curCell.x==endX && curCell.y==endY && curCell.fval<=openlist.top().fval) {
+				if(curCell.x==endX && curCell.y==endY && curCell.priority<=openlist.top().priority) {
 					while(path.containsKey(curCell)) {
 						shortestPath.add(curCell);
 						curCell=path.get(curCell);
 					}
-					System.out.println("Running A*");
+					//System.out.println("Running A*");
 					/*
 					System.out.println("Shortest path");
 					for(Cell cell : shortestPath) {
@@ -245,7 +250,7 @@ public class Grid {
 					if(!closedlist.contains(nextCell) && !openlist.contains(nextCell)) {
 						//if it's not visible we assume it's unblocked and try to traverse it anyways
 						if(!nextCell.blocked || !nextCell.visible) {
-							nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
+							nextCell.values(curCell.gval+1, nextCell.hval(endX,endY), size, tieBreaker);
 							openlist.push(nextCell);
 							//Path uses parents as values and children as keys so we can find shortest path lather
 							path.put(nextCell, curCell);
@@ -274,12 +279,27 @@ public class Grid {
 						neighbor.visible=true;
 					}
 					moveCounter++;
-					System.out.println("Step "+moveCounter);
-					print();
-					System.out.println();
+					//System.out.println("Step "+moveCounter);
+					//print();
+					//System.out.println();
 				}
 			}
 		}
+	}
+	public void smallLargeGValues(int startX, int startY, int endX, int endY) {
+		long startTime = System.currentTimeMillis();
+		repeatedForwardAStar(startX,startY,endX,endY, true);
+		long endTime = System.currentTimeMillis();
+		long totalTimeLarge = endTime - startTime;
+		print();
+		System.out.println("Large G Value run time:"+totalTimeLarge);
+		reset();
+		startTime = System.currentTimeMillis();
+		repeatedForwardAStar(startX,startY,endX,endY, false);
+		endTime = System.currentTimeMillis();
+		long totalTimeSmall = endTime - startTime;
+		print();
+		System.out.println("Small G Value run time:"+totalTimeSmall);
 	}
 	//Debugging
 	public void revealAll() {
@@ -290,8 +310,8 @@ public class Grid {
 		}
 	}
 	
-	//Reset all blocks back to not visited, not useful as visited is only for maze generation
-	public void visitedAll() {
+	//Reset all blocks back to not visited, also set blocks back to not visible
+	public void reset() {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {
 				if(grid.get(i).get(j).visited=false) {
@@ -355,6 +375,65 @@ public class Grid {
 				}
 			}
 			System.out.println("");
+		}
+	}
+	
+	public void save(String filename) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+		for(int i=0; i<size; i++) {
+			for(int j=0; j<size; j++) {
+				Cell curCell = grid.get(i).get(j);
+				if(curCell.blocked) {
+					writer.write("1");
+				}
+				else {
+					writer.write("0");
+				}
+			}
+			writer.newLine();
+		}
+		writer.close();
+		/*
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(filename);
+			for(int i=0; i<size; i++) {
+				for(int j=0; j<size; j++) {
+					Cell curCell = grid.get(j).get(i);
+					if(curCell.blocked) {
+						out.write(0);
+					}
+					else {
+						out.write(1);
+					}
+				}
+			}
+		} finally {
+			if(out !=null) {
+				out.close();
+			}
+		}
+		*/
+	}
+	public void load(String filename) throws IOException{
+		BufferedReader in = new BufferedReader(new FileReader(filename));
+		String currentLine;
+		int i=0;
+		int j=0;
+		while((currentLine = in.readLine()) != null) {
+			j=0;
+			for(char c : currentLine.toCharArray()) {
+				//System.out.println(i+","+j+","+c+","+currentLine.length());
+				//System.out.print(c);
+				if(c=='0') {
+					grid.get(i).get(j).blocked=false;
+				}
+				else if(c=='1') {
+					grid.get(i).get(j).blocked=true;
+				}
+				j++;
+			}
+			i++;
 		}
 	}
 }
