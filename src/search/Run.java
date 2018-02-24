@@ -71,12 +71,11 @@ public class Run {
 		
 		input.close();
 		grid.reset();
-		//grid.print();
-		System.out.println("Path");
-		//grid.revealAll();
+		//grid.printSteps=false;
 		//grid.repeatedForwardAStar(startX, startY, endX, endY, tieBreaker);
-		grid.repeatedBackwardsAStar(startX, startY, endX, endY, tieBreaker);
+		//grid.repeatedBackwardsAStar(startX, startY, endX, endY, tieBreaker);
 		//grid.smallLargeGValues(startX, startY, endX, endY);
+		grid.forwardBackwardsAStar(startX, startY, endX, endY);
 		grid.print();
 		grid.statistics();
 		
