@@ -22,14 +22,14 @@ public class Grid {
 				grid.get(i).add(new Cell(j,i));
 			}
 		}
-		/*
+		
 		grid.get(4).get(3).blocked=true;
 		grid.get(3).get(2).blocked=true;
 		grid.get(2).get(2).blocked=true;
 		grid.get(1).get(2).blocked=true;
 		grid.get(3).get(3).blocked=true;
 		grid.get(2).get(3).blocked=true;
-		*/
+		
 		//grid.get(4).get(3).blocked=true;
 		//grid.get(3).get(4).blocked=true;
 	}
@@ -282,6 +282,105 @@ public class Grid {
 					//System.out.println("Step "+moveCounter);
 					//print();
 					//System.out.println();
+				}
+			}
+		}
+	}
+	
+	public void repeatedBackwardsAStar(int startX, int startY, int endX, int endY, boolean tieBreaker) {
+		//Initiate the starting cell as the agent cell, setting it visible and visited
+		Cell agentCell = grid.get(startY).get(startX);
+		agentCell.visible=true;
+		agentCell.values(0, agentCell.hval(endX, endY), size, tieBreaker);
+		Cell targetCell = grid.get(endY).get(endX);
+		targetCell.target=true;
+		Cell curCell;
+		agentCell.agent=true;
+		int moveCounter=0;
+		for(Cell cell : neighbors(agentCell)){
+			cell.visible=true;
+		}
+		//System.out.println("Step 0");
+		//print();
+		
+		//While the agent cell isn't at the end we are not finished
+		while(agentCell.x!=endX || agentCell.y!=endY) {
+			//This is the tree pointer for calculating path
+			HashMap<Cell, Cell> path = new HashMap<Cell, Cell>();
+			int aSteps=0;
+			//This array will have the shortest path but backwards
+			ArrayList<Cell> shortestPath = new ArrayList<Cell>();
+			//Open list heap
+			OpenList openlist = new OpenList(size*size);
+			//Closed list of cells
+			ArrayList<Cell> closedlist = new ArrayList<Cell>();
+			openlist.push(targetCell);
+			//This is A* if openlist is empty there is no possible path
+			while(openlist.size()>0) {
+				if(aSteps==0) {
+					for(Cell cell : neighbors(targetCell)) {
+						path.put(cell, targetCell);
+					}
+				}
+				aSteps++;
+				//Take lowest f value cell off heap
+				curCell = openlist.pop();
+				//We have found the shortest path if A* has reached the end and is the smallest value in the heap
+				if(curCell.x==agentCell.x && curCell.y==agentCell.y && curCell.priority<=openlist.top().priority) {
+					while(path.containsKey(curCell)) {
+						shortestPath.add(curCell);
+						curCell=path.get(curCell);
+					}
+					shortestPath.add(targetCell);
+					System.out.println("Running A*");
+					
+					System.out.println("Shortest path");
+					for(Cell cell : shortestPath) {
+						System.out.println(cell.x+","+cell.y);
+					}
+					
+					break;
+				}
+				closedlist.add(curCell);
+				ArrayList<Cell> neighbors = neighbors(curCell);
+				for(Cell nextCell : neighbors) {
+					//If the cell hasn't been added previously add it to the openlist if it's not blocked
+					if(!closedlist.contains(nextCell) && !openlist.contains(nextCell)) {
+						//if it's not visible we assume it's unblocked and try to traverse it anyways
+						if(!nextCell.blocked || !nextCell.visible) {
+							nextCell.values(curCell.gval+1, nextCell.hval(startX,startY), size, tieBreaker);
+							System.out.println(curCell.x+","+curCell.y+","+curCell.fval+","+curCell.gval+","+curCell.hval);
+							openlist.push(nextCell);
+							//Path uses parents as values and children as keys so we can find shortest path lather
+							path.put(nextCell, curCell);
+						}
+					}
+				}
+			}
+			//We have exhausted all options and cannot find a path
+			if(shortestPath.isEmpty()) {
+				System.out.println("No possible path");
+				break;
+			}
+			//Move
+			//Collections.reverse(shortestPath);
+			for(Cell cellPath : shortestPath.subList(1, shortestPath.size())) {
+				//Whenever the path is blocked we need to redo A*
+				if(cellPath.blocked==true) {
+					break;
+				}
+				else{
+					//Move agent
+					agentCell.agent=false;
+					agentCell=cellPath;
+					agentCell.agent=true;
+					for(Cell neighbor : neighbors(agentCell)) {
+						neighbor.visible=true;
+					}
+					moveCounter++;
+					System.out.println("Step "+moveCounter);
+					print();
+					System.out.println();
 				}
 			}
 		}

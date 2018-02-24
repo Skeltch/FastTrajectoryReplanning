@@ -39,10 +39,10 @@ public class Run {
 		}
 		*/
 		
-		Grid grid = new Grid(101);
-		//Grid grid = new Grid();
+		//Grid grid = new Grid(101);
+		Grid grid = new Grid();
 		//grid.print();
-		grid.printAll();
+		//grid.printAll();
 		//grid.save("C:\\Users\\Sam\\Desktop\\AI\\maze.txt");
 		//System.out.println();
 		//grid.load("C:\\Users\\Sam\\Desktop\\AI\\maze.txt");
@@ -56,7 +56,7 @@ public class Run {
 		int endX = input.nextInt();
 		System.out.println("Enter end y:");
 		int endY = input.nextInt();
-		/*
+		
 		System.out.println("Break ties with large g values or small g values?");
 		System.out.println("1. Large");
 		System.out.println("2. Small");
@@ -68,14 +68,15 @@ public class Run {
 		else if(tieBreakerInput==2) {
 			tieBreaker=false;
 		}
-		*/
+		
 		input.close();
 		grid.reset();
 		//grid.print();
 		System.out.println("Path");
 		//grid.revealAll();
 		//grid.repeatedForwardAStar(startX, startY, endX, endY, tieBreaker);
-		grid.smallLargeGValues(startX, startY, endX, endY);
+		grid.repeatedBackwardsAStar(startX, startY, endX, endY, tieBreaker);
+		//grid.smallLargeGValues(startX, startY, endX, endY);
 		grid.print();
 		grid.statistics();
 		
