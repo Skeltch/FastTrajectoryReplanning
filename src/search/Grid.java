@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.Collections;
 
 public class Grid {
 	Random rand = new Random();
@@ -18,16 +19,16 @@ public class Grid {
 				//grid.get(i).get(j).visited=true;
 			}
 		}
-		/*
+		
 		grid.get(4).get(3).blocked=true;
 		grid.get(3).get(2).blocked=true;
 		grid.get(2).get(2).blocked=true;
 		grid.get(1).get(2).blocked=true;
 		grid.get(3).get(3).blocked=true;
 		grid.get(2).get(3).blocked=true;
-		*/
-		grid.get(4).get(3).blocked=true;
-		grid.get(3).get(4).blocked=true;
+		
+		//grid.get(4).get(3).blocked=true;
+		//grid.get(3).get(4).blocked=true;
 	}
 	//Initialize the grid with the described method
 	public Grid(int size) {
@@ -209,76 +210,107 @@ public class Grid {
 	//when we come upon new data (blocked cell) repeat A*?
 	//**************Instead of fval we need to break ties with another value******
 	public void repeatedForwardAStar(int startX, int startY, int endX, int endY) {
-		Cell start = grid.get(startY).get(startX);
-		HashMap<Cell, Cell> path = new HashMap<Cell, Cell>();
-		ArrayList<Cell> shortestPath = new ArrayList<Cell>();
-		start.visited=true;
-		start.visible=true;
-		start.values(0, start.hval(endX, endY));
-		ArrayList<Cell> gscore = new ArrayList<Cell>();
-		ArrayList<Cell> fscore = new ArrayList<Cell>();
-		OpenList openlist = new OpenList(size*size);
-		openlist.push(start);
+		Cell agentCell = grid.get(startY).get(startX);
+		agentCell.visited=true;
+		agentCell.visible=true;
+		agentCell.values(0, agentCell.hval(endX, endY));
+		grid.get(endY).get(endX).target=true;
 		Cell curCell;
-		ArrayList<Cell> closedlist = new ArrayList<Cell>();
+		agentCell.agent=true;
 		int counter=0;
-		for(Cell cell : neighbors(start)){
+		int moveCounter=0;
+		for(Cell cell : neighbors(agentCell)){
 			cell.visible=true;
 		}
-		//Another loop while agent isn't at target
-		//Move by reversing shortestPath list and if the original path
-		//is blocked, run A* again with new information
-		while(openlist.size()>0) {
-			/*
-			System.out.println("Prepop");
-			for(int i=0; i<openlist.size; i++) {
-				System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
-			}
-			*/
-			curCell = openlist.pop();
-			//print();
-			if(curCell.x==endX && curCell.y==endY && curCell.fval<=openlist.top().fval) {
-				System.out.println("Shortest path");
-				while(path.containsKey(curCell)) {
-					shortestPath.add(curCell);
-					curCell=path.get(curCell);
-				}
-				for(Cell cell : shortestPath) {
-					System.out.println(cell.x+","+cell.y);
-				}
-				break;
+		//System.out.println("Move 0");
+		//print();
+		System.out.println("Step 0");
+		print();
+		while(agentCell.x!=endX || agentCell.y!=endY) {
+			HashMap<Cell, Cell> path = new HashMap<Cell, Cell>();
+			ArrayList<Cell> shortestPath = new ArrayList<Cell>();
+			OpenList openlist = new OpenList(size*size);
+			ArrayList<Cell> closedlist = new ArrayList<Cell>();
+			openlist.push(agentCell);
+			//Another loop while agent isn't at target
+			//Move by reversing shortestPath list and if the original path
+			//is blocked, run A* again with new information
+			while(openlist.size()>0) {
 				/*
-				System.out.println("Closed list");
-				for(Cell cell : closedlist) {
-					System.out.println(Integer.toString(cell.x)+","+Integer.toString(cell.y));
+				System.out.println("Prepop");
+				for(int i=0; i<openlist.size; i++) {
+					System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
 				}
 				*/
-			}
-			System.out.print("Current Location: ");
-			System.out.println(Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
-			//curCell.visited=true;
-			System.out.println("Step "+counter);
-			counter++;
-			closedlist.add(curCell);
-			ArrayList<Cell> neighbors = neighbors(curCell);
-			//check neighbors not in list already, and not blocked
-			for(Cell nextCell : neighbors) {
-				//nextCell.visible=true;
-				//use cell.visited?
-				//Maybe bugged here
-				//if(!openlist.heap.contains(nextCell)) {
-				if(!closedlist.contains(nextCell) && !openlist.contains(nextCell)) {
-					if(!nextCell.blocked || !nextCell.visible) {
-						nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
-						//System.out.println("Pushing cells: "+nextCell.x+","+nextCell.y+","+nextCell.fval);
-						openlist.push(nextCell);
-						path.put(nextCell, curCell);
+				curCell = openlist.pop();
+				//print();
+				if(curCell.x==endX && curCell.y==endY && curCell.fval<=openlist.top().fval) {
+					while(path.containsKey(curCell)) {
+						shortestPath.add(curCell);
+						curCell=path.get(curCell);
+					}
+					System.out.println("Running A*");
+					/*
+					System.out.println("Shortest path");
+					for(Cell cell : shortestPath) {
+						System.out.println(cell.x+","+cell.y);
+					}
+					*/
+					break;
+					/*
+					System.out.println("Closed list");
+					for(Cell cell : closedlist) {
+						System.out.println(Integer.toString(cell.x)+","+Integer.toString(cell.y));
+					}
+					*/
+				}
+				/*
+				System.out.print("Current Location: ");
+				System.out.println(Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
+				System.out.println("Step "+counter);
+				*/
+				counter++;
+				closedlist.add(curCell);
+				ArrayList<Cell> neighbors = neighbors(curCell);
+				//check neighbors not in list already, and not blocked
+				for(Cell nextCell : neighbors) {
+					//nextCell.visible=true;
+					//use cell.visited?
+					//Maybe bugged here
+					//if(!openlist.heap.contains(nextCell)) {
+					if(!closedlist.contains(nextCell) && !openlist.contains(nextCell)) {
+						if(!nextCell.blocked || !nextCell.visible) {
+							nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
+							//System.out.println("Pushing cells: "+nextCell.x+","+nextCell.y+","+nextCell.fval);
+							openlist.push(nextCell);
+							path.put(nextCell, curCell);
+						}
 					}
 				}
 			}
-		}
-		if(shortestPath.isEmpty()) {
-			System.out.println("No possible path");
+			if(shortestPath.isEmpty()) {
+				System.out.println("No possible path");
+				break;
+			}
+			//Move
+			Collections.reverse(shortestPath);
+			for(Cell cellPath : shortestPath) {
+				if(cellPath.blocked==true) {
+					break;
+				}
+				else{
+					agentCell.agent=false;
+					agentCell=cellPath;
+					agentCell.agent=true;
+					for(Cell neighbor : neighbors(agentCell)) {
+						neighbor.visible=true;
+					}
+					moveCounter++;
+					System.out.println("Step "+moveCounter);
+					print();
+					System.out.println();
+				}
+			}
 		}
 	}
 	
@@ -323,10 +355,10 @@ public class Grid {
 			for(int j=0; j<size; j++) {
 				Cell curCell = grid.get(i).get(j);
 				if(curCell.agent==true) {
-					System.out.println("A");
+					System.out.print("A");
 				}
 				else if(curCell.target==true) {
-					System.out.println("T");
+					System.out.print("T");
 				}
 				else if(curCell.blocked==true && curCell.visible==true) {
 					System.out.print("x");

@@ -55,8 +55,9 @@ public class Run {
 		grid.visitedAll();
 		//grid.print();
 		System.out.println("Path");
-		grid.revealAll();
+		//grid.revealAll();
 		grid.repeatedForwardAStar(startX, startY, endX, endY);
+		System.out.println("Finished");
 		grid.print();
 		grid.statistics();
 		
