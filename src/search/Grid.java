@@ -9,14 +9,13 @@ public class Grid {
 	Random rand = new Random();
 	public ArrayList<ArrayList<Cell>> grid = new ArrayList<ArrayList<Cell>>();
 	int size;
-	//Example 5x5 grid
+	//Example grids for easy testing and debugging
 	public Grid() {
 		size=5;
 		for(int i=0; i<5; i++) {
 			grid.add(new ArrayList<Cell>());
 			for(int j=0; j<5; j++) {
 				grid.get(i).add(new Cell(j,i));
-				//grid.get(i).get(j).visited=true;
 			}
 		}
 		
@@ -30,7 +29,7 @@ public class Grid {
 		//grid.get(4).get(3).blocked=true;
 		//grid.get(3).get(4).blocked=true;
 	}
-	//Initialize the grid with the described method
+	//Initialize the grid with the described method and input size
 	public Grid(int size) {
 		this.size=size;
 		for(int i=0; i<size; i++) {
@@ -44,21 +43,17 @@ public class Grid {
 		//Pick random starting point
 		int startY=rand.nextInt(size);
 		int startX=rand.nextInt(size);
-		System.out.println("Starting cell :"+Integer.toString(startX)+","+Integer.toString(startY));
 		Cell startCell = grid.get(startY).get(startX);
 		buildStack.push(startCell);
-		//Starting node is visited and unblocked
+		
+		//Starting node is visited and unblocked (default value)
 		startCell.visited=true;
 		//Count number of visited Nodes to ensure we reach every single one
 		int visitedNodes=1;
 		Cell curCell=startCell;
 		while(visitedNodes<size*size) {
-			//Debugging in x,y
-			//print();
-			//System.out.print("Moving from: "+Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
 			Cell nextCell=nextCell(curCell);
 			if(nextCell==null) {
-				//System.out.println("Dead end at: "+Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
 				if(buildStack.size()!=0) {
 					curCell=buildStack.pop();
 				}
@@ -67,9 +62,7 @@ public class Grid {
 						for(int j=0; j<size; j++) {
 							if(grid.get(i).get(j).visited==false) {
 								curCell=grid.get(i).get(j);
-								//curCell.visited=true;
 								visitedNodes++;
-								//System.out.println("Finding new starting point at: "+Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
 							}
 						}
 					}
@@ -77,18 +70,14 @@ public class Grid {
 			}
 			else {
 				nextCell.visited=true;
-				//System.out.println(" To: "+Integer.toString(nextCell.x)+","+Integer.toString(nextCell.y));
 				buildStack.push(nextCell);
 				curCell=nextCell;
-				//curCell.visited=true;
 				//From 0 to 2, giving 30 percent to be blocked
 				if(rand.nextInt(10)<3) {
-					//System.out.println("Blocked cell at :"+Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
 					curCell.blocked=true;
 				}
 				visitedNodes++;
 			}
-			//System.out.println(visitedNodes);
 		}		
 	}
 	//Pick next Cell, if all are visited return null
@@ -145,15 +134,10 @@ public class Grid {
 		if(up==true && right==true && down==true && left==true) {
 			return null;
 		}
-		//And we pick a random one
-		/*
-		if(potential.size()==1) {
-			return potential.get(0);
-		}
-		*/
+		//Randomly pick a cell
 		return potential.get(rand.nextInt(potential.size()));
 	}
-	//Move
+	//Easy way to move 
 	public Cell up(Cell curCell) {
 		if(curCell.y==size-1) {
 			return null;
@@ -178,7 +162,8 @@ public class Grid {
 		}
 		return grid.get(curCell.y).get(curCell.x-1);
 	}
-	//maybe don't check if cell is blocked. we need to update a* on new information
+	
+	//Method to create a list of neighbors to traverse
 	public ArrayList<Cell> neighbors(Cell curCell){
 		ArrayList<Cell> neighbors = new ArrayList<Cell>();
 		
@@ -210,40 +195,35 @@ public class Grid {
 	//when we come upon new data (blocked cell) repeat A*?
 	//**************Instead of fval we need to break ties with another value******
 	public void repeatedForwardAStar(int startX, int startY, int endX, int endY) {
+		//Initiate the starting cell as the agent cell, setting it visible and visited
 		Cell agentCell = grid.get(startY).get(startX);
-		agentCell.visited=true;
 		agentCell.visible=true;
 		agentCell.values(0, agentCell.hval(endX, endY));
 		grid.get(endY).get(endX).target=true;
 		Cell curCell;
 		agentCell.agent=true;
-		int counter=0;
 		int moveCounter=0;
 		for(Cell cell : neighbors(agentCell)){
 			cell.visible=true;
 		}
-		//System.out.println("Move 0");
-		//print();
 		System.out.println("Step 0");
 		print();
+		//While the agent cell isn't at the end we are not finished
 		while(agentCell.x!=endX || agentCell.y!=endY) {
+			//This is the tree pointer for calculating path
 			HashMap<Cell, Cell> path = new HashMap<Cell, Cell>();
+			//This array will have the shortest path but backwards
 			ArrayList<Cell> shortestPath = new ArrayList<Cell>();
+			//Open list heap
 			OpenList openlist = new OpenList(size*size);
+			//Closed list of cells
 			ArrayList<Cell> closedlist = new ArrayList<Cell>();
 			openlist.push(agentCell);
-			//Another loop while agent isn't at target
-			//Move by reversing shortestPath list and if the original path
-			//is blocked, run A* again with new information
+			//This is A* if openlist is empty there is no possible path
 			while(openlist.size()>0) {
-				/*
-				System.out.println("Prepop");
-				for(int i=0; i<openlist.size; i++) {
-					System.out.println(openlist.heap[i].x+","+openlist.heap[i].y+","+openlist.heap[i].fval);
-				}
-				*/
+				//Take lowest f value cell off heap
 				curCell = openlist.pop();
-				//print();
+				//We have found the shortest path if A* has reached the end and is the smallest value in the heap
 				if(curCell.x==endX && curCell.y==endY && curCell.fval<=openlist.top().fval) {
 					while(path.containsKey(curCell)) {
 						shortestPath.add(curCell);
@@ -257,37 +237,23 @@ public class Grid {
 					}
 					*/
 					break;
-					/*
-					System.out.println("Closed list");
-					for(Cell cell : closedlist) {
-						System.out.println(Integer.toString(cell.x)+","+Integer.toString(cell.y));
-					}
-					*/
 				}
-				/*
-				System.out.print("Current Location: ");
-				System.out.println(Integer.toString(curCell.x)+","+Integer.toString(curCell.y));
-				System.out.println("Step "+counter);
-				*/
-				counter++;
 				closedlist.add(curCell);
 				ArrayList<Cell> neighbors = neighbors(curCell);
-				//check neighbors not in list already, and not blocked
 				for(Cell nextCell : neighbors) {
-					//nextCell.visible=true;
-					//use cell.visited?
-					//Maybe bugged here
-					//if(!openlist.heap.contains(nextCell)) {
+					//If the cell hasn't been added previously add it to the openlist if it's not blocked
 					if(!closedlist.contains(nextCell) && !openlist.contains(nextCell)) {
+						//if it's not visible we assume it's unblocked and try to traverse it anyways
 						if(!nextCell.blocked || !nextCell.visible) {
 							nextCell.values(curCell.gval+1, nextCell.hval(endX,endY));
-							//System.out.println("Pushing cells: "+nextCell.x+","+nextCell.y+","+nextCell.fval);
 							openlist.push(nextCell);
+							//Path uses parents as values and children as keys so we can find shortest path lather
 							path.put(nextCell, curCell);
 						}
 					}
 				}
 			}
+			//We have exhausted all options and cannot find a path
 			if(shortestPath.isEmpty()) {
 				System.out.println("No possible path");
 				break;
@@ -295,10 +261,12 @@ public class Grid {
 			//Move
 			Collections.reverse(shortestPath);
 			for(Cell cellPath : shortestPath) {
+				//Whenever the path is blocked we need to redo A*
 				if(cellPath.blocked==true) {
 					break;
 				}
 				else{
+					//Move agent
 					agentCell.agent=false;
 					agentCell=cellPath;
 					agentCell.agent=true;
@@ -313,7 +281,7 @@ public class Grid {
 			}
 		}
 	}
-	
+	//Debugging
 	public void revealAll() {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {
@@ -322,7 +290,7 @@ public class Grid {
 		}
 	}
 	
-	//Reset all blocks back to not visited
+	//Reset all blocks back to not visited, not useful as visited is only for maze generation
 	public void visitedAll() {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {
@@ -333,6 +301,7 @@ public class Grid {
 			}
 		}
 	}
+	//Number of blocked and unblocked cells
 	public void statistics() {
 		int numBlocked=0;
 		int numUnblocked=0;
@@ -349,7 +318,7 @@ public class Grid {
 		System.out.println("Number of blocked cells: "+Integer.toString(numBlocked));
 		System.out.println("Number of unblocked cells: "+Integer.toString(numUnblocked));
 	}
-	//i is y j is x
+	//print maze taking into account visibility
 	public void print() {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {
@@ -373,6 +342,7 @@ public class Grid {
 			System.out.println("");
 		}
 	}
+	//print maze ignoring visibility
 	public void printAll() {
 		for(int i=0; i<size; i++) {
 			for(int j=0; j<size; j++) {

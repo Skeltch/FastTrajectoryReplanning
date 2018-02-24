@@ -38,8 +38,8 @@ public class Run {
 		}
 		*/
 		
-		//Grid grid = new Grid(5);
-		Grid grid = new Grid();
+		Grid grid = new Grid(5);
+		//Grid grid = new Grid();
 		//grid.print();
 		grid.printAll();
 		Scanner input = new Scanner(System.in);
