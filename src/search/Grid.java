@@ -292,11 +292,11 @@ public class Grid {
 		}
 	}
 	
+	//Very similar to repeated Forwards A Star
 	public void repeatedBackwardsAStar(int startX, int startY, int endX, int endY, boolean tieBreaker) {
 		//Initiate the starting cell as the agent cell, setting it visible and visited
 		Cell agentCell = grid.get(startY).get(startX);
 		agentCell.visible=true;
-		//agentCell.values(0, agentCell.hval(endX, endY), size, tieBreaker);
 		Cell targetCell = grid.get(endY).get(endX);
 		targetCell.target=true;
 		Cell curCell;
@@ -326,6 +326,7 @@ public class Grid {
 			while(openlist.size()>0) {
 				//If it's the first step we need to include the neighbors of the targetCell, and recalculate targetCell's values
 				if(aSteps==0) {
+					//Comparing from targetCell to agentCell now
 					targetCell.values(0, targetCell.hval(agentCell.x,agentCell.y), size, tieBreaker);
 					for(Cell cell : neighbors(targetCell)) {
 						path.put(cell, targetCell);
@@ -358,8 +359,8 @@ public class Grid {
 					if(!closedlist.contains(nextCell) && !openlist.contains(nextCell)) {
 						//if it's not visible we assume it's unblocked and try to traverse it anyways
 						if(!nextCell.blocked || !nextCell.visible) {
+							//Compare current cell to agent cell
 							nextCell.values(curCell.gval+1, nextCell.hval(agentCell.x,agentCell.y), size, tieBreaker);
-							//System.out.println(curCell.x+","+curCell.y+","+curCell.fval+","+curCell.gval+","+curCell.hval);
 							openlist.push(nextCell);
 							//Path uses parents as values and children as keys so we can find shortest path lather
 							path.put(nextCell, curCell);
@@ -397,6 +398,7 @@ public class Grid {
 			}
 		}
 	}
+	//Compare small vs large g values for tie breaking
 	public void smallLargeGValues(int startX, int startY, int endX, int endY) {
 		long startTime = System.currentTimeMillis();
 		repeatedForwardAStar(startX,startY,endX,endY, true);
@@ -412,7 +414,7 @@ public class Grid {
 		System.out.println("Large G Value run time:"+totalTimeLarge);
 		System.out.println("Small G Value run time:"+totalTimeSmall);
 	}
-	
+	//Compare forwards vs backwards repeated a star breaking ties with large g values
 	public void forwardBackwardsAStar(int startX, int startY, int endX, int endY) {
 		long startTime = System.currentTimeMillis();
 		repeatedForwardAStar(startX,startY,endX,endY,true);
@@ -446,6 +448,9 @@ public class Grid {
 					System.out.println("Cell not visited!");
 				}
 				grid.get(i).get(j).visited=false;
+				grid.get(i).get(j).visible=false;
+				grid.get(i).get(j).agent=false;
+				grid.get(i).get(j).target=false;
 			}
 		}
 	}

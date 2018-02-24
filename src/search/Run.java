@@ -76,7 +76,7 @@ public class Run {
 		//grid.repeatedBackwardsAStar(startX, startY, endX, endY, tieBreaker);
 		//grid.smallLargeGValues(startX, startY, endX, endY);
 		grid.forwardBackwardsAStar(startX, startY, endX, endY);
-		grid.print();
+		//grid.print();
 		grid.statistics();
 		
 	}
