@@ -1,0 +1,17 @@
+Running Maze 1:155,983,,2006
+Running Maze 2:590,1763,,2807
+Running Maze 3:780,2037,,3055
+Running Maze 4:1118,2506,,3395
+Running Maze 5:1287,2777,,3831
+Running Maze 6:1626,3016,,4140
+Running Maze 7:1707,3115,,4179
+Running Maze 8:1780,3433,,4536
+Running Maze 9:1894,3734,,4653
+Running Maze 10:2080,3805,,4774
+Running Maze 11:2167,3871,,4869
+Running Maze 12:2183,4079,,4903
+Running Maze 13:2230,4114,,4947
+Running Maze 14:2308,4184,,5343
+Running Maze 15:2360,4396,,5470
+Running Maze 16:2368,4415,,5482
+Running Maze 17:2440,4438,,5529

@@ -431,6 +431,44 @@ public class Grid {
 		System.out.println("Small Backwards run time:"+totalTimeBackwards);
 	}
 	
+	//Run on all 50 mazes and report run time
+	public void runAll() throws IOException {
+		long totalForwards=0;
+		long totalBackwards=0;
+		long totalSmall=0;
+		long startTime=0;
+		long endTime=0;
+		long totalTime=0;
+		for(int i=1; i<=50; i++) {
+			load("mazes\\maze"+i+".txt");
+			//Run repeated forwards a star with large G tie break
+			startTime = System.currentTimeMillis();
+			repeatedForwardAStar(0,0,100,100,true);
+			endTime = System.currentTimeMillis();
+			totalTime = endTime - startTime;
+			totalForwards+=totalTime;
+			reset();
+			//Run repeated backwards a star with large G tie break
+			startTime = System.currentTimeMillis();
+			repeatedBackwardsAStar(0,0,100,100,true);
+			endTime = System.currentTimeMillis();
+			totalTime = endTime - startTime;
+			totalBackwards+=totalTime;
+			reset();
+			//Run repeated forwards a star with small G tie break
+			startTime = System.currentTimeMillis();
+			repeatedForwardAStar(0,0,100,100,false);
+			endTime = System.currentTimeMillis();
+			totalTime = endTime - startTime;
+			totalSmall+=totalTime;
+			//Run repeated adaptive a* with large G tie break
+			System.out.println("Running Maze "+i+":"+totalForwards+","+totalBackwards+","+totalSmall);
+		}
+		System.out.println("Average Time for Repeated Forwards A*: "+totalForwards/50);
+		System.out.println("Average Time for Repeated Backwards A*: "+totalBackwards/50);
+		System.out.println("Average Time for Small vs Large G Value tie breaking A*: "+totalSmall/50);
+	}
+	
 	//Debugging
 	public void revealAll() {
 		for(int i=0; i<size; i++) {
