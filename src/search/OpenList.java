@@ -4,22 +4,13 @@ import java.util.ArrayList;
 public class OpenList {
 	int size;
 	Cell[] heap;
-	//ArrayList<Cell> heap;
 	
 	public OpenList(int size) {
 		this.size=0;
 		heap = new Cell[size];
-		//heap = new ArrayList<Cell>();
 	}
 	public void push(Cell cell) {
 		heap[size++]=cell;
-		/*
-		if(size==0 && heap.size()!=0) {
-			heap.set(0, cell);
-		}
-		heap.add(cell);
-		size++;
-		*/
 		heapifyUp(size-1);
 	}
 	public int size() {
@@ -33,19 +24,9 @@ public class OpenList {
 			index = (index-1)/2;
 		}
 		heap[index]=tmp;
-		
-		/*
-		Cell tmp = heap.get(index);
-		while(index>0 && tmp.priority < heap.get((index-1)/2).priority) {
-			heap.set(index, heap.get((index-1)/2));
-			index = (index-1)/2;
-		}
-		heap.set(index, tmp);
-		*/
 	}
 	public Cell pop() {
 		Cell top=heap[0];
-		//Cell top = heap.get(0);
 		delete(0);
 		return top;
 	}
@@ -59,14 +40,6 @@ public class OpenList {
 		size--;
 		heapifyDown(index);
 		return cell;
-		
-		/*
-		Cell cell = heap.get(index);
-		heap.set(index, heap.get(size-1));
-		size--;
-		heapifyDown(index);
-		return cell;
-		*/
 	}
 	public void heapifyDown(int index) {
 		
@@ -83,22 +56,6 @@ public class OpenList {
 			index = child;
 		}
 		heap[index] = tmp;
-		
-		/*
-		int child;
-		Cell tmp = heap.get(index);
-		while(2*index+1<size) {
-			child = minChild(index);
-			if(heap.get(child).priority < tmp.priority) {
-				heap.set(index,  heap.get(child));
-			}
-			else {
-				break;
-			}
-			index = child;
-		}
-		heap.set(index, tmp);
-		*/
 	}
 	public int minChild(int index) {
 		int best = 2*index+1;
@@ -106,7 +63,6 @@ public class OpenList {
 		int pos = 2*index+2;
 		while(k<=2 && pos<size) {
 			if(heap[pos].priority < heap[best].priority) {
-			//if(heap.get(pos).priority < heap.get(best).priority) {
 				best = pos;
 			}
 			pos = (2*index+(k++));

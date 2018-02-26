@@ -1,5 +1,5 @@
 package search;
-
+//Used as a model for openlist
 public class BinaryHeap {
 	int size;
 	int[] heap;

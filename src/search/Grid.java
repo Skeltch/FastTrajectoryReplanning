@@ -466,7 +466,7 @@ public class Grid {
 		}
 		System.out.println("Average Time for Repeated Forwards A*: "+totalForwards/50);
 		System.out.println("Average Time for Repeated Backwards A*: "+totalBackwards/50);
-		System.out.println("Average Time for Small vs Large G Value tie breaking A*: "+totalSmall/50);
+		System.out.println("Average Time for Small G Value tie breaking Repeated Forwards A*: "+totalSmall/50);
 	}
 	
 	//Debugging
